@@ -58,7 +58,8 @@ export default function Login() {
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'auto',
+        py: { xs: 2, md: 4 }
       }}
     >
       {/* Animated Background Elements */}
@@ -103,22 +104,22 @@ export default function Login() {
         }}
       />
 
-      <Container maxWidth="lg" sx={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
-        <Grid container spacing={4} alignItems="center">
+      <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+        <Grid container spacing={4} alignItems="center" sx={{ minHeight: { xs: 'auto', md: '80vh' } }}>
           {/* Left Side - Branding */}
           <Grid item xs={12} md={6}>
             <Fade in timeout={1000}>
-              <Box sx={{ color: 'white', textAlign: { xs: 'center', md: 'left' } }}>
+              <Box sx={{ color: 'white', textAlign: { xs: 'center', md: 'left' }, mb: { xs: 4, md: 0 } }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, justifyContent: { xs: 'center', md: 'flex-start' } }}>
-                  <InventoryIcon sx={{ fontSize: 48, mr: 2 }} />
-                  <Typography variant="h3" sx={{ fontWeight: 800 }}>
+                  <InventoryIcon sx={{ fontSize: { xs: 36, md: 48 }, mr: 2 }} />
+                  <Typography variant="h3" sx={{ fontWeight: 800, fontSize: { xs: '2rem', md: '3rem' } }}>
                     InventoryPro
                   </Typography>
                 </Box>
-                <Typography variant="h4" sx={{ fontWeight: 600, mb: 2 }}>
+                <Typography variant="h4" sx={{ fontWeight: 600, mb: 2, fontSize: { xs: '1.5rem', md: '2rem' } }}>
                   Welcome Back! 👋
                 </Typography>
-                <Typography variant="h6" sx={{ opacity: 0.9, mb: 4, lineHeight: 1.6 }}>
+                <Typography variant="h6" sx={{ opacity: 0.9, mb: 4, lineHeight: 1.6, fontSize: { xs: '1rem', md: '1.25rem' } }}>
                   Sign in to your account and take control of your inventory management
                 </Typography>
                 
@@ -147,14 +148,16 @@ export default function Login() {
               <Paper 
                 elevation={24} 
                 sx={{ 
-                  p: 5, 
+                  p: { xs: 3, md: 5 }, 
                   borderRadius: 4,
                   background: 'rgba(255, 255, 255, 0.95)',
                   backdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   boxShadow: '0 25px 50px rgba(0, 0, 0, 0.15)',
                   position: 'relative',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  maxWidth: 500,
+                  mx: 'auto'
                 }}
               >
                 {/* Decorative Elements */}
@@ -176,16 +179,16 @@ export default function Login() {
                     sx={{ 
                       m: 2, 
                       bgcolor: 'primary.main',
-                      width: 80,
-                      height: 80,
+                      width: { xs: 60, md: 80 },
+                      height: { xs: 60, md: 80 },
                       boxShadow: '0 8px 32px rgba(37, 99, 235, 0.3)',
                       border: '4px solid white'
                     }}
                   >
-                    <LockOutlinedIcon sx={{ fontSize: 40 }} />
+                    <LockOutlinedIcon sx={{ fontSize: { xs: 30, md: 40 } }} />
                   </Avatar>
                   
-                  <Typography component="h1" variant="h4" sx={{ mb: 1, fontWeight: 700, color: 'text.primary' }}>
+                  <Typography component="h1" variant="h4" sx={{ mb: 1, fontWeight: 700, color: 'text.primary', fontSize: { xs: '1.5rem', md: '2rem' } }}>
                     Sign In
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 4, textAlign: 'center' }}>
