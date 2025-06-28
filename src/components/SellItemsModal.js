@@ -18,18 +18,23 @@ import {
   IconButton,
   Alert,
   CircularProgress,
-  Autocomplete
+  Autocomplete,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import { Add as AddIcon, Remove as RemoveIcon, Print as PrintIcon } from '@mui/icons-material';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { db } from '../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import { doc, updateDoc, getDoc, setDoc, increment } from 'firebase/firestore';
 
 export default function SellItemsModal({ open, onClose, items, onSaleComplete }) {
   const [saleItems, setSaleItems] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [receiptNamingMethod, setReceiptNamingMethod] = useState('sequential'); // 'sequential' or 'datetime'
 
   React.useEffect(() => {
     if (open) {
@@ -80,6 +85,37 @@ export default function SellItemsModal({ open, onClose, items, onSaleComplete })
     return '';
   };
 
+  const generateReceiptFileName = async () => {
+    if (receiptNamingMethod === 'datetime') {
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 19).replace(/:/g, '-').replace('T', '_');
+      return `receipt_${dateStr}.pdf`;
+    } else {
+      // Sequential numbering
+      const userId = auth.currentUser?.uid;
+      if (!userId) return 'receipt.pdf';
+
+      try {
+        // Get or create receipt counter for this user
+        const counterRef = doc(db, 'receiptCounters', userId);
+        const counterDoc = await getDoc(counterRef);
+        
+        let nextNumber = 1;
+        if (counterDoc.exists()) {
+          nextNumber = counterDoc.data().count + 1;
+        }
+        
+        // Update the counter
+        await setDoc(counterRef, { count: nextNumber }, { merge: true });
+        
+        return `receipt${nextNumber}.pdf`;
+      } catch (err) {
+        console.error('Error getting receipt number:', err);
+        return 'receipt.pdf';
+      }
+    }
+  };
+
   const handleSellAndExport = async () => {
     setError('');
     const validation = validateSale();
@@ -105,16 +141,50 @@ export default function SellItemsModal({ open, onClose, items, onSaleComplete })
       console.log('All inventory updates completed, generating PDF...');
       
       try {
+        const fileName = await generateReceiptFileName();
         const docPDF = new jsPDF();
+        
+        // Enhanced PDF styling
+        docPDF.setFontSize(20);
+        docPDF.setFont(undefined, 'bold');
         docPDF.text('Sales Receipt', 14, 18);
+        
+        // Add date and time
+        docPDF.setFontSize(12);
+        docPDF.setFont(undefined, 'normal');
+        const now = new Date();
+        const dateStr = now.toLocaleDateString();
+        const timeStr = now.toLocaleTimeString();
+        docPDF.text(`Date: ${dateStr}`, 14, 28);
+        docPDF.text(`Time: ${timeStr}`, 14, 35);
+        
+        // Add receipt number if sequential
+        if (receiptNamingMethod === 'sequential') {
+          const receiptNumber = fileName.replace('receipt', '').replace('.pdf', '');
+          docPDF.text(`Receipt #: ${receiptNumber}`, 14, 42);
+        }
+        
         autoTable(docPDF, {
-          startY: 28,
+          startY: 50,
           head: [['Name', 'Unit Price', 'Quantity', 'Total']],
           body: receiptRows.map(r => [r.name, `$${r.price}`, r.quantity, `$${r.total}`]),
+          headStyles: {
+            fillColor: [102, 126, 234],
+            textColor: 255,
+            fontStyle: 'bold'
+          },
+          styles: {
+            fontSize: 10
+          }
         });
+        
+        // Grand total with better styling
+        docPDF.setFontSize(14);
+        docPDF.setFont(undefined, 'bold');
         docPDF.text(`Grand Total: $${grandTotal}`, 14, docPDF.lastAutoTable.finalY + 12);
-        docPDF.save('receipt.pdf');
-        console.log('PDF generated successfully');
+        
+        docPDF.save(fileName);
+        console.log('PDF generated successfully:', fileName);
       } catch (pdfErr) {
         console.error('PDF export error:', pdfErr);
         setError('Failed to generate PDF. Please check your browser and try again.');
@@ -147,6 +217,29 @@ export default function SellItemsModal({ open, onClose, items, onSaleComplete })
             Add Item
           </Button>
         </Box>
+        
+        {/* Receipt Naming Method Selection */}
+        <Box sx={{ mb: 3 }}>
+          <FormControl fullWidth size="small">
+            <InputLabel>Receipt Naming Method</InputLabel>
+            <Select
+              value={receiptNamingMethod}
+              label="Receipt Naming Method"
+              onChange={(e) => setReceiptNamingMethod(e.target.value)}
+              disabled={loading}
+            >
+              <MenuItem value="sequential">Sequential (receipt1, receipt2, ...)</MenuItem>
+              <MenuItem value="datetime">Date & Time (receipt_2024-01-15_14-30-25.pdf)</MenuItem>
+            </Select>
+          </FormControl>
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+            {receiptNamingMethod === 'sequential' 
+              ? 'Receipts will be numbered sequentially for your account' 
+              : 'Receipts will include the exact date and time of sale'
+            }
+          </Typography>
+        </Box>
+        
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <TableContainer component={Paper} sx={{ mb: 2 }}>
           <Table>
