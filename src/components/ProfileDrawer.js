@@ -10,7 +10,6 @@ import {
   ListItemText,
   Divider,
   Switch,
-  FormControlLabel,
   Button,
   Dialog,
   DialogTitle,
@@ -34,7 +33,7 @@ import {
 } from '@mui/icons-material';
 import { auth, db } from '../firebase';
 import { updateProfile, deleteUser } from 'firebase/auth';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { deleteDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import ProfilePictureUpload from './ProfilePictureUpload';
 

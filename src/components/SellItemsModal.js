@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -8,7 +8,6 @@ import {
   Box,
   Typography,
   TextField,
-  MenuItem,
   Table,
   TableBody,
   TableCell,

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   Container, 
   Typography, 
-  Paper, 
   Box, 
   Button, 
   Grid,
@@ -17,23 +16,17 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
-  TextField,
-  Alert
+  DialogActions
 } from '@mui/material';
 import { 
   Dashboard as DashboardIcon,
   Inventory as InventoryIcon,
   Add as AddIcon,
-  Search as SearchIcon,
   Notifications as NotificationsIcon,
-  AccountCircle as AccountCircleIcon,
   TrendingUp as TrendingUpIcon,
   ShoppingCart as ShoppingCartIcon,
   Warning as WarningIcon,
-  CheckCircle as CheckCircleIcon,
-  Edit as EditIcon,
-  Visibility as ViewIcon
+  CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from './firebase';
@@ -47,7 +40,6 @@ import ProfileDrawer from './components/ProfileDrawer';
 export default function Inventory({ isDarkMode, onThemeChange }) {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -71,16 +63,10 @@ export default function Inventory({ isDarkMode, onThemeChange }) {
         ...doc.data()
       }));
       setItems(itemsData);
-      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
-
-  const handleLogout = () => {
-    auth.signOut();
-    navigate('/login');
-  };
 
   const handleAddItem = () => {
     setAddModalOpen(true);
