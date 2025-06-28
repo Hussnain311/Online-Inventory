@@ -11,9 +11,20 @@ import {
   Paper, 
   Alert,
   CircularProgress,
-  Fade
+  Fade,
+  InputAdornment,
+  IconButton,
+  Divider
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import {
+  LockOutlined as LockOutlinedIcon,
+  Email as EmailIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+  Inventory as InventoryIcon,
+  TrendingUp as TrendingUpIcon,
+  Security as SecurityIcon
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { auth } from './firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -21,6 +32,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -41,144 +53,294 @@ export default function Login() {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Animated Background Elements */}
       <Box
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          py: 4
+          position: 'absolute',
+          top: '10%',
+          left: '10%',
+          width: 200,
+          height: 200,
+          borderRadius: '50%',
+          background: 'rgba(255, 255, 255, 0.1)',
+          animation: 'float 6s ease-in-out infinite',
+          '@keyframes float': {
+            '0%, 100%': { transform: 'translateY(0px)' },
+            '50%': { transform: 'translateY(-20px)' }
+          }
         }}
-      >
-        <Fade in timeout={800}>
-          <Paper 
-            elevation={24} 
-            sx={{ 
-              p: 6, 
-              borderRadius: 4,
-              width: '100%',
-              maxWidth: 400,
-              background: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)'
-            }}
-          >
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Avatar 
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '60%',
+          right: '15%',
+          width: 150,
+          height: 150,
+          borderRadius: '50%',
+          background: 'rgba(255, 255, 255, 0.08)',
+          animation: 'float 8s ease-in-out infinite reverse',
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          bottom: '20%',
+          left: '20%',
+          width: 100,
+          height: 100,
+          borderRadius: '50%',
+          background: 'rgba(255, 255, 255, 0.06)',
+          animation: 'float 7s ease-in-out infinite',
+        }}
+      />
+
+      <Container maxWidth="lg" sx={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
+        <Grid container spacing={4} alignItems="center">
+          {/* Left Side - Branding */}
+          <Grid item xs={12} md={6}>
+            <Fade in timeout={1000}>
+              <Box sx={{ color: 'white', textAlign: { xs: 'center', md: 'left' } }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, justifyContent: { xs: 'center', md: 'flex-start' } }}>
+                  <InventoryIcon sx={{ fontSize: 48, mr: 2 }} />
+                  <Typography variant="h3" sx={{ fontWeight: 800 }}>
+                    InventoryPro
+                  </Typography>
+                </Box>
+                <Typography variant="h4" sx={{ fontWeight: 600, mb: 2 }}>
+                  Welcome Back! 👋
+                </Typography>
+                <Typography variant="h6" sx={{ opacity: 0.9, mb: 4, lineHeight: 1.6 }}>
+                  Sign in to your account and take control of your inventory management
+                </Typography>
+                
+                {/* Feature Highlights */}
+                <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <SecurityIcon sx={{ mr: 2, fontSize: 24 }} />
+                    <Typography variant="body1">Secure & Reliable</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <TrendingUpIcon sx={{ mr: 2, fontSize: 24 }} />
+                    <Typography variant="body1">Real-time Analytics</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <InventoryIcon sx={{ mr: 2, fontSize: 24 }} />
+                    <Typography variant="body1">Smart Inventory Tracking</Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Fade>
+          </Grid>
+
+          {/* Right Side - Login Form */}
+          <Grid item xs={12} md={6}>
+            <Fade in timeout={1200}>
+              <Paper 
+                elevation={24} 
                 sx={{ 
-                  m: 2, 
-                  bgcolor: 'primary.main',
-                  width: 64,
-                  height: 64,
-                  boxShadow: '0 8px 32px rgba(37, 99, 235, 0.3)'
+                  p: 5, 
+                  borderRadius: 4,
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 25px 50px rgba(0, 0, 0, 0.15)',
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
               >
-                <LockOutlinedIcon sx={{ fontSize: 32 }} />
-              </Avatar>
-              <Typography component="h1" variant="h4" sx={{ mb: 1, fontWeight: 700 }}>
-                Welcome Back
-              </Typography>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 4, textAlign: 'center' }}>
-                Sign in to your account to continue
-              </Typography>
-              
-              {error && (
-                <Alert severity="error" sx={{ width: '100%', mb: 3, borderRadius: 2 }}>
-                  {error}
-                </Alert>
-              )}
-              
-              <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  autoFocus
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
-                  sx={{ mb: 2 }}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                  sx={{ mb: 1 }}
+                {/* Decorative Elements */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: -50,
+                    right: -50,
+                    width: 100,
+                    height: 100,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(45deg, #667eea, #764ba2)',
+                    opacity: 0.1
+                  }}
                 />
                 
-                <Grid container justifyContent="flex-end" sx={{ mb: 3 }}>
-                  <Grid item>
-                    <Link 
-                      href="#" 
-                      variant="body2" 
-                      onClick={() => navigate('/forgot-password')}
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+                  <Avatar 
+                    sx={{ 
+                      m: 2, 
+                      bgcolor: 'primary.main',
+                      width: 80,
+                      height: 80,
+                      boxShadow: '0 8px 32px rgba(37, 99, 235, 0.3)',
+                      border: '4px solid white'
+                    }}
+                  >
+                    <LockOutlinedIcon sx={{ fontSize: 40 }} />
+                  </Avatar>
+                  
+                  <Typography component="h1" variant="h4" sx={{ mb: 1, fontWeight: 700, color: 'text.primary' }}>
+                    Sign In
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 4, textAlign: 'center' }}>
+                    Access your inventory dashboard
+                  </Typography>
+                  
+                  {error && (
+                    <Alert 
+                      severity="error" 
                       sx={{ 
-                        textDecoration: 'none',
-                        '&:hover': { textDecoration: 'underline' }
+                        width: '100%', 
+                        mb: 3, 
+                        borderRadius: 2,
+                        boxShadow: '0 4px 12px rgba(244, 67, 54, 0.15)'
                       }}
                     >
-                      Forgot password?
-                    </Link>
-                  </Grid>
-                </Grid>
-                
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  disabled={loading}
-                  sx={{ 
-                    py: 1.5,
-                    mb: 3,
-                    fontSize: '1.1rem',
-                    position: 'relative'
-                  }}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} color="inherit" />
-                  ) : (
-                    'Sign In'
+                      {error}
+                    </Alert>
                   )}
-                </Button>
-                
-                <Grid container justifyContent="center">
-                  <Grid item>
-                    <Typography variant="body2" color="text.secondary">
-                      Don't have an account?{' '}
-                      <Link 
-                        href="#" 
-                        variant="body2" 
-                        onClick={() => navigate('/signup')}
-                        sx={{ 
-                          textDecoration: 'none',
-                          fontWeight: 600,
-                          '&:hover': { textDecoration: 'underline' }
-                        }}
-                      >
-                        Sign Up
-                      </Link>
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Box>
-          </Paper>
-        </Fade>
-      </Box>
-    </Container>
+                  
+                  <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      name="email"
+                      autoComplete="email"
+                      autoFocus
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={loading}
+                      sx={{ mb: 3 }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <EmailIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                    
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="password"
+                      label="Password"
+                      type={showPassword ? 'text' : 'password'}
+                      id="password"
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}
+                      sx={{ mb: 2 }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              edge="end"
+                            >
+                              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                    
+                    <Grid container justifyContent="flex-end" sx={{ mb: 3 }}>
+                      <Grid item>
+                        <Link 
+                          href="#" 
+                          variant="body2" 
+                          onClick={() => navigate('/forgot-password')}
+                          sx={{ 
+                            textDecoration: 'none',
+                            fontWeight: 500,
+                            color: 'primary.main',
+                            '&:hover': { 
+                              textDecoration: 'underline',
+                              color: 'primary.dark'
+                            }
+                          }}
+                        >
+                          Forgot password?
+                        </Link>
+                      </Grid>
+                    </Grid>
+                    
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      disabled={loading}
+                      sx={{ 
+                        py: 1.8,
+                        mb: 3,
+                        fontSize: '1.1rem',
+                        fontWeight: 600,
+                        borderRadius: 2,
+                        background: 'linear-gradient(45deg, #667eea, #764ba2)',
+                        boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+                        '&:hover': {
+                          background: 'linear-gradient(45deg, #5a6fd8, #6a4190)',
+                          boxShadow: '0 12px 35px rgba(102, 126, 234, 0.4)',
+                          transform: 'translateY(-2px)'
+                        },
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      {loading ? (
+                        <CircularProgress size={24} color="inherit" />
+                      ) : (
+                        'Sign In'
+                      )}
+                    </Button>
+                    
+                    <Divider sx={{ my: 2 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        OR
+                      </Typography>
+                    </Divider>
+                    
+                    <Grid container justifyContent="center">
+                      <Grid item>
+                        <Typography variant="body2" color="text.secondary">
+                          Don't have an account?{' '}
+                          <Link 
+                            href="#" 
+                            variant="body2" 
+                            onClick={() => navigate('/signup')}
+                            sx={{ 
+                              textDecoration: 'none',
+                              fontWeight: 600,
+                              color: 'primary.main',
+                              '&:hover': { 
+                                textDecoration: 'underline',
+                                color: 'primary.dark'
+                              }
+                            }}
+                          >
+                            Create Account
+                          </Link>
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Box>
+              </Paper>
+            </Fade>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 } 
