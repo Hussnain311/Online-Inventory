@@ -153,11 +153,11 @@ export default function Inventory({ isDarkMode, onThemeChange }) {
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
               }}>
                 <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
-                  Salam! My name is Hussnain
+                  Welcome to Your Inventory Dashboard! 🎉
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9, lineHeight: 1.6 }}>
-                  This is my portfolio showcasing a professional inventory management system built with React, Firebase, and Material-UI. 
-                  Features include real-time data sync, PDF receipts, user authentication, and a beautiful responsive design.
+                  You're now using a powerful inventory management system designed to streamline your business operations. 
+                  Track your stock, manage sales, generate receipts, and get real-time insights into your inventory performance.
                 </Typography>
               </Box>
             </Box>
