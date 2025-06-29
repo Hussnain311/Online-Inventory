@@ -28,11 +28,12 @@ import {
   Inventory as InventoryIcon,
   TrendingUp as TrendingUpIcon,
   Security as SecurityIcon,
-  CheckCircle as CheckCircleIcon
+  CheckCircle as CheckCircleIcon,
+  Google as GoogleIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { auth } from './firebase';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -43,6 +44,7 @@ export default function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -83,6 +85,25 @@ export default function Signup() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    setError('');
+    setGoogleLoading(true);
+    
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      navigate('/inventory');
+    } catch (err) {
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError('Sign-up was cancelled. Please try again.');
+      } else {
+        setError('Failed to sign up with Google. Please try again.');
+      }
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -256,6 +277,38 @@ export default function Signup() {
                     </Alert>
                   )}
                   
+                  {/* Google Sign Up Button */}
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    startIcon={googleLoading ? <CircularProgress size={20} /> : <GoogleIcon />}
+                    onClick={handleGoogleSignUp}
+                    disabled={loading || googleLoading}
+                    sx={{ 
+                      py: 1.5,
+                      mb: 3,
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      borderRadius: 2,
+                      borderColor: '#4285f4',
+                      color: '#4285f4',
+                      '&:hover': {
+                        borderColor: '#3367d6',
+                        backgroundColor: 'rgba(66, 133, 244, 0.04)',
+                        transform: 'translateY(-1px)'
+                      },
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    {googleLoading ? 'Signing up...' : 'Continue with Google'}
+                  </Button>
+                  
+                  <Divider sx={{ width: '100%', mb: 3 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      OR
+                    </Typography>
+                  </Divider>
+                  
                   <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
                     <TextField
                       margin="normal"
@@ -268,7 +321,7 @@ export default function Signup() {
                       autoFocus
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      disabled={loading}
+                      disabled={loading || googleLoading}
                       sx={{ mb: 3 }}
                       InputProps={{
                         startAdornment: (
@@ -289,7 +342,7 @@ export default function Signup() {
                       autoComplete="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      disabled={loading}
+                      disabled={loading || googleLoading}
                       sx={{ mb: 3 }}
                       InputProps={{
                         startAdornment: (
@@ -311,7 +364,7 @@ export default function Signup() {
                       autoComplete="new-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      disabled={loading}
+                      disabled={loading || googleLoading}
                       sx={{ mb: 3 }}
                       InputProps={{
                         endAdornment: (
@@ -338,7 +391,7 @@ export default function Signup() {
                       autoComplete="new-password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      disabled={loading}
+                      disabled={loading || googleLoading}
                       sx={{ mb: 3 }}
                       InputProps={{
                         endAdornment: (
@@ -358,7 +411,7 @@ export default function Signup() {
                       type="submit"
                       fullWidth
                       variant="contained"
-                      disabled={loading}
+                      disabled={loading || googleLoading}
                       sx={{ 
                         py: 1.8,
                         mb: 3,
@@ -381,12 +434,6 @@ export default function Signup() {
                         'Create Account'
                       )}
                     </Button>
-                    
-                    <Divider sx={{ my: 2 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        OR
-                      </Typography>
-                    </Divider>
                     
                     <Grid container justifyContent="center">
                       <Grid item>

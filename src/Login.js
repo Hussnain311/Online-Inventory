@@ -23,11 +23,12 @@ import {
   VisibilityOff as VisibilityOffIcon,
   Inventory as InventoryIcon,
   TrendingUp as TrendingUpIcon,
-  Security as SecurityIcon
+  Security as SecurityIcon,
+  Google as GoogleIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { auth } from './firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -35,6 +36,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -49,6 +51,25 @@ export default function Login() {
       setError('Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setGoogleLoading(true);
+    
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      navigate('/inventory');
+    } catch (err) {
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in was cancelled. Please try again.');
+      } else {
+        setError('Failed to sign in with Google. Please try again.');
+      }
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -209,6 +230,38 @@ export default function Login() {
                     </Alert>
                   )}
                   
+                  {/* Google Sign In Button */}
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    startIcon={googleLoading ? <CircularProgress size={20} /> : <GoogleIcon />}
+                    onClick={handleGoogleSignIn}
+                    disabled={loading || googleLoading}
+                    sx={{ 
+                      py: 1.5,
+                      mb: 3,
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      borderRadius: 2,
+                      borderColor: '#4285f4',
+                      color: '#4285f4',
+                      '&:hover': {
+                        borderColor: '#3367d6',
+                        backgroundColor: 'rgba(66, 133, 244, 0.04)',
+                        transform: 'translateY(-1px)'
+                      },
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    {googleLoading ? 'Signing in...' : 'Continue with Google'}
+                  </Button>
+                  
+                  <Divider sx={{ width: '100%', mb: 3 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      OR
+                    </Typography>
+                  </Divider>
+                  
                   <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
                     <TextField
                       margin="normal"
@@ -221,7 +274,7 @@ export default function Login() {
                       autoFocus
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      disabled={loading}
+                      disabled={loading || googleLoading}
                       sx={{ mb: 3 }}
                       InputProps={{
                         startAdornment: (
@@ -243,7 +296,7 @@ export default function Login() {
                       autoComplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      disabled={loading}
+                      disabled={loading || googleLoading}
                       sx={{ mb: 2 }}
                       InputProps={{
                         endAdornment: (
@@ -284,7 +337,7 @@ export default function Login() {
                       type="submit"
                       fullWidth
                       variant="contained"
-                      disabled={loading}
+                      disabled={loading || googleLoading}
                       sx={{ 
                         py: 1.8,
                         mb: 3,
@@ -307,12 +360,6 @@ export default function Login() {
                         'Sign In'
                       )}
                     </Button>
-                    
-                    <Divider sx={{ my: 2 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        OR
-                      </Typography>
-                    </Divider>
                     
                     <Grid container justifyContent="center">
                       <Grid item>
